@@ -6,6 +6,7 @@ plugins {
     application
     checkstyle
     jacoco
+    id("com.github.ben-manes.versions") version "0.49.0"
 }
 
 group = "hexlet.code"
