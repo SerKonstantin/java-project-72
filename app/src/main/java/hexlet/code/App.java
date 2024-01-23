@@ -6,6 +6,7 @@ import gg.jte.ContentType;
 import gg.jte.TemplateEngine;
 import gg.jte.resolve.ResourceCodeResolver;
 import hexlet.code.databases.BaseRepository;
+import hexlet.code.util.Routes;
 import io.javalin.Javalin;
 import io.javalin.rendering.template.JavalinJte;
 
@@ -54,7 +55,7 @@ public class App {
         JavalinJte.init(createTemplateEngine());
         var app = Javalin.create(config -> config.plugins.enableDevLogging());
 
-        app.get("/", ctx -> {
+        app.get(Routes.rootPath(), ctx -> {
             ctx.render("index.jte");
         });
 
