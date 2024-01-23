@@ -1,14 +1,25 @@
 package hexlet.code;
 
+import io.javalin.Javalin;
+
 public class App {
     public static void main(String[] args) {
-        int num1 = 5;
-        int num2 = 3;
-        int sum = add(num1, num2);
-        System.out.println("The sum of " + num1 + " and " + num2 + " is " + sum);
+        var app = getApp();
+        app.start(getPort());
     }
 
-    public static int add(int a, int b) {
-        return a + b;
+    public static int getPort() {
+        String port = System.getenv().getOrDefault("PORT", "7070");
+        return Integer.valueOf(port);
+    }
+
+    public static Javalin getApp() {
+        var app = Javalin.create(config -> config.plugins.enableDevLogging());
+
+        app.get("/", ctx -> {
+            ctx.render("index.jte");
+        });
+
+        return app;
     }
 }

@@ -41,5 +41,7 @@ bin/
 ### Mac OS ###
 .DS_Store
 
+
 ### Personal ###
 .idea/
+jte-classes/
