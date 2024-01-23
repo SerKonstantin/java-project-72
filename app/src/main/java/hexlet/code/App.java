@@ -45,7 +45,7 @@ public class App {
         var dataSource = new HikariDataSource(hikariConfig);
         var resourceFileName = "schema.sql";
         var sql = readResourceFile(resourceFileName);
-        try(var conn = dataSource.getConnection(); var stmt = conn.createStatement()) {
+        try (var conn = dataSource.getConnection(); var stmt = conn.createStatement()) {
             stmt.execute(sql);
         }
 
