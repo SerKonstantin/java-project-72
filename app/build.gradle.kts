@@ -26,10 +26,11 @@ dependencies {
     implementation("io.javalin:javalin-rendering:5.6.3")
     implementation("gg.jte:jte:3.1.6")
     implementation("com.h2database:h2:2.2.224")
+    implementation("org.postgresql:postgresql:42.7.1")
     implementation("com.zaxxer:HikariCP:5.1.0")
     implementation("com.fasterxml.jackson.core:jackson-databind:2.16.1")
 
-    testImplementation(platform("org.junit:junit-bom:5.9.2"))
+    testImplementation(platform("org.junit:junit-bom:5.10.1"))
     testImplementation("org.junit.jupiter:junit-jupiter")
 
     // https://mvnrepository.com/artifact/org.projectlombok/lombok
