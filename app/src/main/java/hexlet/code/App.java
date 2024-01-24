@@ -5,7 +5,9 @@ import com.zaxxer.hikari.HikariDataSource;
 import gg.jte.ContentType;
 import gg.jte.TemplateEngine;
 import gg.jte.resolve.ResourceCodeResolver;
-import hexlet.code.databases.BaseRepository;
+import hexlet.code.controller.UrlsController;
+import hexlet.code.database.BaseRepository;
+import hexlet.code.dto.BasePage;
 import hexlet.code.util.Routes;
 import io.javalin.Javalin;
 import io.javalin.rendering.template.JavalinJte;
@@ -15,6 +17,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.sql.SQLException;
+import java.util.Collections;
 import java.util.stream.Collectors;
 
 public class App {
@@ -29,7 +32,8 @@ public class App {
     }
 
     public static String getJdbcUrl() {
-        return System.getenv().getOrDefault("JDBC_DATABASE_URL", "jdbc:h2:mem:project;DB_CLOSE_DELAY=-1;");
+        return System.getenv().getOrDefault("JDBC_DATABASE_URL",
+                "jdbc:h2:mem:project;MODE=PostgreSQL;DB_CLOSE_DELAY=-1;");
     }
 
     private static String readResourceFile(String filename) throws IOException {
@@ -56,8 +60,13 @@ public class App {
         var app = Javalin.create(config -> config.plugins.enableDevLogging());
 
         app.get(Routes.rootPath(), ctx -> {
-            ctx.render("index.jte");
+            var page = new BasePage();
+            page.setFlash(ctx.consumeSessionAttribute("flash"));
+            page.setFlashType(ctx.consumeSessionAttribute("flashType"));
+            ctx.render("index.jte", Collections.singletonMap("page", page));
         });
+        app.get(Routes.urlsPath(), UrlsController::index);
+        app.post(Routes.urlsPath(), UrlsController::create);
 
         return app;
     }
