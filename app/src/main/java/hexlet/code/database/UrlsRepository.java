@@ -7,7 +7,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
-public class UrlsRepository extends BaseRepository{
+public class UrlsRepository extends BaseRepository {
     public static List<Url> getEntities() throws SQLException {
         var sql = "SELECT * FROM urls";
         try (var conn = dataSource.getConnection(); var stmt = conn.prepareStatement(sql)) {
@@ -27,7 +27,7 @@ public class UrlsRepository extends BaseRepository{
     }
 
     public static void save(Url url) throws SQLException {
-        var sql ="INSERT INTO urls (name) VALUES (?)";
+        var sql = "INSERT INTO urls (name) VALUES (?)";
         try (var conn = dataSource.getConnection();
              var stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             stmt.setString(1, url.getName());
