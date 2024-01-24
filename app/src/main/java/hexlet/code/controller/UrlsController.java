@@ -21,17 +21,25 @@ public class UrlsController {
     }
 
     public static void create(Context ctx) throws SQLException {
-        var userInput = ctx.formParam("url");
+        var userInput = ctx.formParam("url").trim().toLowerCase();
+
         try {
+            if (!userInput.startsWith("http://") && !userInput.startsWith("https://")) {
+                userInput = "https://" + userInput;
+            }
+
             URI uri = new URI(userInput);
             var scheme = uri.getScheme();
-            scheme = scheme == null ? "https" : scheme;
             var host = uri.getHost();
             var port = uri.getPort();
-            if (host != null) {
+
+            if (host != null && host.contains(".")) {
+                if (host.startsWith("www.")) {
+                    host = host.substring(4);
+                }
+
                 StringBuilder sb = new StringBuilder();
                 sb.append(scheme).append("://").append(host);
-
                 if (port != -1) {
                     sb.append(":").append(port);
                 }
@@ -41,15 +49,15 @@ public class UrlsController {
                 ctx.sessionAttribute("flash", "TODO success message 1");
                 ctx.sessionAttribute("flashType", "success");
                 ctx.redirect(Routes.urlsPath());
+
             } else {
-                throw new URISyntaxException(userInput, "TODO Invalid url message 1");
+                throw new URISyntaxException(userInput, "Invalid URL");
             }
         } catch (URISyntaxException e) {
-            ctx.sessionAttribute("flash", "TODO fail message 2");
+            ctx.sessionAttribute("flash", "Invalid URL. Please try again with a valid URL.");
             ctx.sessionAttribute("flashType", "danger");
             ctx.redirect(Routes.rootPath());
         }
-
     }
 
     public static void show(Context ctx) {
