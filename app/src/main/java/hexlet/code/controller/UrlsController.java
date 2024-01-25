@@ -45,16 +45,24 @@ public class UrlsController {
                 }
 
                 var url = new Url(sb.toString());
-                UrlsRepository.save(url);
-                ctx.sessionAttribute("flash", "TODO success message 1");
-                ctx.sessionAttribute("flashType", "success");
-                ctx.redirect(Routes.urlsPath());
+
+                if (UrlsRepository.findByName(url.getName()).isEmpty()) {
+                    UrlsRepository.save(url);
+                    ctx.sessionAttribute("flash", "Страница успешно добавлена"); // TODO check message
+                    ctx.sessionAttribute("flashType", "success");
+                    ctx.redirect(Routes.urlsPath());
+
+                } else {
+                    ctx.sessionAttribute("flash", "Страница уже существует"); // TODO check message
+                    ctx.sessionAttribute("flashType", "info");
+                    ctx.redirect(Routes.urlsPath());
+                }
 
             } else {
                 throw new URISyntaxException(userInput, "Invalid URL");
             }
         } catch (URISyntaxException e) {
-            ctx.sessionAttribute("flash", "Invalid URL. Please try again with a valid URL.");
+            ctx.sessionAttribute("flash", "Некорректный URL"); // TODO check message
             ctx.sessionAttribute("flashType", "danger");
             ctx.redirect(Routes.rootPath());
         }

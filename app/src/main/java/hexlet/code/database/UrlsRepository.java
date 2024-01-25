@@ -6,6 +6,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class UrlsRepository extends BaseRepository {
     public static List<Url> getEntities() throws SQLException {
@@ -38,6 +39,25 @@ public class UrlsRepository extends BaseRepository {
                 url.setCreatedAt(generatedKeys.getTimestamp(2));
             } else {
                 throw new SQLException("DB have not returned an id or timestamp after saving an entity");
+            }
+        }
+    }
+
+    public static Optional<Url> findByName(String term) throws SQLException {
+        var sql = "SELECT * FROM urls WHERE name = ?";
+        try (var conn = dataSource.getConnection(); var stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, term);
+            var results = stmt.executeQuery();
+            if (results.next()) {
+                var id = results.getLong("id");
+                var name = results.getString("name");
+                var createdAt = results.getTimestamp("created_at");
+                var url = new Url(name);
+                url.setId(id);
+                url.setCreatedAt(createdAt);
+                return Optional.of(url);
+            } else {
+                return Optional.empty();
             }
         }
     }
