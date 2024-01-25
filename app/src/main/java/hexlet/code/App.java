@@ -66,6 +66,7 @@ public class App {
             ctx.render("index.jte", Collections.singletonMap("page", page));
         });
         app.get(Routes.urlsPath(), UrlsController::index);
+        app.get(Routes.urlPath("{id}"), UrlsController::show);
         app.post(Routes.urlsPath(), UrlsController::create);
 
         return app;

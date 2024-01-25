@@ -1,10 +1,13 @@
 package hexlet.code.controller;
 
 import hexlet.code.database.UrlsRepository;
+import hexlet.code.dto.urls.UrlPage;
 import hexlet.code.dto.urls.UrlsPage;
 import hexlet.code.model.Url;
 import hexlet.code.util.Routes;
 import io.javalin.http.Context;
+import io.javalin.http.NotFoundResponse;
+import io.javalin.validation.ValidationException;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -68,8 +71,15 @@ public class UrlsController {
         }
     }
 
-    public static void show(Context ctx) {
-        // TODO
+    public static void show(Context ctx) throws SQLException {
+        try {
+            var id = ctx.pathParamAsClass("id", Long.class).get();
+            var url = UrlsRepository.findById(id)
+                    .orElseThrow(NotFoundResponse::new); // TODO mb create not found page?
+            var page = new UrlPage(url);
+            ctx.render("urls/show.jte", Collections.singletonMap("page", page));
+        } catch (ValidationException e) {
+            throw new NotFoundResponse("Page not found"); // TODO mb create not found page?
+        }
     }
-
 }

@@ -26,7 +26,6 @@
                 ${page.getFlash()}
             </div>
         @endif
-        
         ${content}
     </main>
 

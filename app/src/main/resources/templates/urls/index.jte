@@ -1,4 +1,5 @@
 @import hexlet.code.dto.urls.UrlsPage
+@import hexlet.code.util.Routes
 @param UrlsPage page
 
 @template.layout.page(
@@ -10,7 +11,7 @@
         <h2>TODO urls list name</h2>
         <ul>
             @for(var url : page.getUrls())
-                <li>${url.getName()}   -   ${String.valueOf(url.getCreatedAt())}</li>
+                <li><a href="${Routes.urlPath(url.getId())}">${url.getName()}</a>   -   ${String.valueOf(url.getCreatedAt())}</li>
             @endfor
         </ul>
     @endif
