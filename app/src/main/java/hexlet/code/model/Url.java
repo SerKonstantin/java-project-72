@@ -8,7 +8,7 @@ import lombok.Setter;
 public class Url {
     private Long id;
     private String name;
-    private java.sql.Timestamp createdAt;
+    private String createdAt;
 
     public Url(String name) {
         this.name = name;

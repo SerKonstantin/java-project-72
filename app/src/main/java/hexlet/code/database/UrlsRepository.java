@@ -1,5 +1,6 @@
 package hexlet.code.database;
 
+import hexlet.code.model.TimestampFormatter;
 import hexlet.code.model.Url;
 
 import java.sql.SQLException;
@@ -20,7 +21,7 @@ public class UrlsRepository extends BaseRepository {
                 var createdAt = results.getTimestamp("created_at");
                 var url = new Url(name);
                 url.setId(id);
-                url.setCreatedAt(createdAt);
+                url.setCreatedAt(TimestampFormatter.getString(createdAt));
                 urls.add(url);
             }
             return urls;
@@ -36,7 +37,8 @@ public class UrlsRepository extends BaseRepository {
             var generatedKeys = stmt.getGeneratedKeys();
             if (generatedKeys.next()) {
                 url.setId(generatedKeys.getLong(1));
-                url.setCreatedAt(generatedKeys.getTimestamp(2));
+                var sqlTimestamp = generatedKeys.getTimestamp(2);
+                url.setCreatedAt(TimestampFormatter.getString(sqlTimestamp));
             } else {
                 throw new SQLException("DB have not returned an id or timestamp after saving an entity");
             }
@@ -53,7 +55,7 @@ public class UrlsRepository extends BaseRepository {
                 var createdAt = results.getTimestamp("created_at");
                 var url = new Url(name);
                 url.setId(id);
-                url.setCreatedAt(createdAt);
+                url.setCreatedAt(TimestampFormatter.getString(createdAt));
                 return Optional.of(url);
             } else {
                 return Optional.empty();
@@ -71,7 +73,7 @@ public class UrlsRepository extends BaseRepository {
                 var createdAt = results.getTimestamp("created_at");
                 var url = new Url(name);
                 url.setId(id);
-                url.setCreatedAt(createdAt);
+                url.setCreatedAt(TimestampFormatter.getString(createdAt));
                 return Optional.of(url);
             } else {
                 return Optional.empty();
