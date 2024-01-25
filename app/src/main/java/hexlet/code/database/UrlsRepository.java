@@ -36,8 +36,8 @@ public class UrlsRepository extends BaseRepository {
             stmt.executeUpdate();
             var generatedKeys = stmt.getGeneratedKeys();
             if (generatedKeys.next()) {
-                url.setId(generatedKeys.getLong(1));
-                var sqlTimestamp = generatedKeys.getTimestamp(2);
+                url.setId(generatedKeys.getLong("id"));
+                var sqlTimestamp = generatedKeys.getTimestamp("created_at");
                 url.setCreatedAt(TimestampFormatter.getString(sqlTimestamp));
             } else {
                 throw new SQLException("DB have not returned an id or timestamp after saving an entity");
