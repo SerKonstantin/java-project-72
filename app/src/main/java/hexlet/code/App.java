@@ -57,7 +57,10 @@ public class App {
         BaseRepository.dataSource = dataSource;
 
         JavalinJte.init(createTemplateEngine());
-        var app = Javalin.create(config -> config.plugins.enableDevLogging());
+        var app = Javalin.create(config -> {
+            config.staticFiles.add("/images");
+            config.plugins.enableDevLogging();
+        });
 
         app.get(Routes.rootPath(), ctx -> {
             var page = new BasePage();
