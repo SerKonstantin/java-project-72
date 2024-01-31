@@ -1,4 +1,4 @@
-package hexlet.code.model;
+package hexlet.code.util;
 
 import java.time.format.DateTimeFormatter;
 

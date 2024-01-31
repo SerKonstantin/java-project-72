@@ -1,6 +1,6 @@
 package hexlet.code.database;
 
-import hexlet.code.model.TimestampFormatter;
+import hexlet.code.util.TimestampFormatter;
 import hexlet.code.model.Url;
 
 import java.sql.SQLException;
