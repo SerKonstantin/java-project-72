@@ -9,7 +9,7 @@
         <p>TODO no urls</p>
     @else
         <h2>TODO urls list name</h2>
-        <ul>
+        <ul class="list">
             @for(var url : page.getUrls())
                 <li><a href="${Routes.urlPath(url.getId())}">${url.getName()}</a>   -   ${String.valueOf(url.getCreatedAt())}</li>
             @endfor
