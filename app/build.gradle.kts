@@ -31,10 +31,12 @@ dependencies {
     implementation("com.zaxxer:HikariCP:5.1.0")
     implementation("com.fasterxml.jackson.core:jackson-databind:2.16.1")
     implementation("org.jsoup:jsoup:1.17.2")
+    implementation("com.mashape.unirest:unirest-java:1.4.9")
 
     testImplementation(platform("org.junit:junit-bom:5.10.1"))
     testImplementation("org.junit.jupiter:junit-jupiter")
     testImplementation("org.assertj:assertj-core:3.25.2")
+    testImplementation("com.squareup.okhttp3:mockwebserver:4.12.0")
 
     compileOnly("org.projectlombok:lombok:1.18.30")
     annotationProcessor("org.projectlombok:lombok:1.18.30")

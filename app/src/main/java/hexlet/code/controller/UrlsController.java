@@ -1,13 +1,17 @@
 package hexlet.code.controller;
 
+import com.mashape.unirest.http.Unirest;
+import com.mashape.unirest.http.exceptions.UnirestException;
+import hexlet.code.database.UrlChecksRepository;
 import hexlet.code.database.UrlsRepository;
 import hexlet.code.dto.urls.UrlPage;
 import hexlet.code.dto.urls.UrlsPage;
 import hexlet.code.model.Url;
+import hexlet.code.model.UrlCheck;
 import hexlet.code.util.Routes;
 import io.javalin.http.Context;
 import io.javalin.http.NotFoundResponse;
-import io.javalin.validation.ValidationException;
+import org.jsoup.Jsoup;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -72,14 +76,39 @@ public class UrlsController {
     }
 
     public static void show(Context ctx) throws SQLException {
+        var id = ctx.pathParamAsClass("id", Long.class).getOrDefault(null);
+        var url = UrlsRepository.findById(id)
+                .orElseThrow(() -> new NotFoundResponse("Page not found")); // TODO mb create not found page?
+        var urlChecks = UrlChecksRepository.getEntities(url.getId());
+        var page = new UrlPage(url, urlChecks);
+        page.setFlash(ctx.consumeSessionAttribute("flash"));
+        page.setFlashType(ctx.consumeSessionAttribute("flashType"));
+        ctx.render("urls/show.jte", Collections.singletonMap("page", page));
+    }
+
+    public static void check(Context ctx) throws SQLException {
+        var urlId = ctx.pathParamAsClass("id", Long.class).getOrDefault(null);
+        var url = UrlsRepository.findById(urlId)
+                .orElseThrow(() -> new NotFoundResponse("Page not found")); // TODO mb create not found page?
         try {
-            var id = ctx.pathParamAsClass("id", Long.class).get();
-            var url = UrlsRepository.findById(id)
-                    .orElseThrow(NotFoundResponse::new); // TODO mb create not found page?
-            var page = new UrlPage(url);
-            ctx.render("urls/show.jte", Collections.singletonMap("page", page));
-        } catch (ValidationException e) {
-            throw new NotFoundResponse("Page not found"); // TODO mb create not found page?
+            var response = Unirest.get(url.getName()).asString();
+            var code = response.getStatus();
+
+            var doc = Jsoup.parse(response.getBody());
+            var title = doc.title();
+            var h1 = doc.selectFirst("h1").text();
+            var description = doc.selectFirst("meta[name=description]").attr("content");
+
+            var urlCheck = new UrlCheck(code, title, h1, description, urlId);
+            UrlChecksRepository.save(urlCheck);
+            ctx.sessionAttribute("flash", "Проверка успешно выполнена"); // TODO check message
+            ctx.sessionAttribute("flashType", "success");
+
+        } catch (UnirestException e) {
+            ctx.sessionAttribute("flash", "Не удалось выполнить проверку"); // TODO check message
+            ctx.sessionAttribute("flashType", "danger");
         }
+
+        ctx.redirect(Routes.urlPath(urlId));
     }
 }
