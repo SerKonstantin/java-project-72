@@ -2,14 +2,16 @@ package hexlet.code;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import hexlet.code.database.UrlChecksRepository;
 import hexlet.code.database.UrlsRepository;
 import hexlet.code.model.Url;
 import hexlet.code.util.Routes;
 import io.javalin.Javalin;
 import io.javalin.testtools.JavalinTest;
+import okhttp3.mockwebserver.MockResponse;
+import okhttp3.mockwebserver.MockWebServer;
 import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.select.Elements;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -19,11 +21,20 @@ import java.io.IOException;
 import java.sql.SQLException;
 
 class AppTest {
-    Javalin app;
+    private Javalin app;
+    private MockWebServer mockServer;
 
     @BeforeEach
     public final void setUp() throws SQLException, IOException {
         app = App.getApp();
+        mockServer = new MockWebServer();
+        mockServer.start();
+    }
+
+    @AfterEach
+    public final void shutdown() throws IOException {
+        mockServer.shutdown();
+        app.close();
     }
 
     @Test
@@ -80,8 +91,8 @@ class AppTest {
             client.post(Routes.urlsPath(), "url=github");
 
             var responseBody = client.get(Routes.urlsPath()).body().string();
-            Document document = Jsoup.parse(responseBody);
-            Elements ulElements = document.select("ul");
+            var doc = Jsoup.parse(responseBody);
+            var ulElements = doc.select("ul");
 
             boolean containsInvalidUrl = ulElements.stream()
                     .anyMatch(ul -> ul.text().contains("github"));
@@ -105,6 +116,37 @@ class AppTest {
         JavalinTest.test(app, ((server, client) -> {
             var response = client.get(Routes.urlPath("1234"));
             assertThat(response.code()).isEqualTo(404);
+        }));
+    }
+
+    @Test
+    public void testUrlCheck() throws IOException {
+        var mockServerUrl = mockServer.url("/").toString();
+
+        var mockResponse = new MockResponse();
+        var mockContent = "<meta name=\"description\" content=\"some description\">\n"
+                + "<title>some title</title>\n"
+                + "<h1>some header</h1>\n";
+        mockResponse.setBody(mockContent);
+        mockServer.enqueue(mockResponse);
+
+        JavalinTest.test(app, ((server, client) -> {
+            var url = new Url(mockServerUrl);
+            UrlsRepository.save(url);
+            var id = url.getId();
+
+            var response = client.post(Routes.checkUrlPath(id));
+            assertThat(response.code()).isEqualTo(200);
+            var responseBody = response.body().string();
+            assertThat(responseBody.contains("200"));
+            assertThat(responseBody.contains("some title"));
+            assertThat(responseBody.contains("some header"));
+            assertThat(responseBody.contains("some description"));
+
+            var urlCheck = UrlChecksRepository.getEntities(1L).get(0);
+            assertThat(urlCheck.getId() == 1L);
+            assertThat(urlCheck.getUrlId().equals(id));
+            assertThat(urlCheck.getCreatedAt()).isNotNull();
         }));
     }
 }
