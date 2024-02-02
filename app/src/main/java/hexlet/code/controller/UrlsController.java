@@ -28,9 +28,13 @@ public class UrlsController {
     }
 
     public static void create(Context ctx) throws SQLException {
-        var userInput = ctx.formParam("url").trim().toLowerCase();
+        var userInput = ctx.formParam("url");
+        if (userInput != null) {
+            userInput = userInput.trim().toLowerCase();
+        }
 
         try {
+            assert userInput != null;
             if (!userInput.startsWith("http://") && !userInput.startsWith("https://")) {
                 userInput = "https://" + userInput;
             }
@@ -68,7 +72,7 @@ public class UrlsController {
             } else {
                 throw new URISyntaxException(userInput, "Invalid URL");
             }
-        } catch (URISyntaxException e) {
+        } catch (AssertionError | URISyntaxException e) {
             ctx.sessionAttribute("flash", "Некорректный URL"); // TODO check message
             ctx.sessionAttribute("flashType", "danger");
             ctx.redirect(Routes.rootPath());
@@ -104,7 +108,7 @@ public class UrlsController {
             ctx.sessionAttribute("flash", "Проверка успешно выполнена"); // TODO check message
             ctx.sessionAttribute("flashType", "success");
 
-        } catch (UnirestException e) {
+        } catch (UnirestException | NullPointerException e) {
             ctx.sessionAttribute("flash", "Не удалось выполнить проверку"); // TODO check message
             ctx.sessionAttribute("flashType", "danger");
         }
