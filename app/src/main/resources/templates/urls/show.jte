@@ -5,25 +5,42 @@
 @template.layout.page(
     page = page,
     content = @`
-        <h2>URL: ${page.getUrl().getName()}</h2>
-        <p>URL id: ${page.getUrl().getId()}</p>
-        <p>Created at: ${page.getUrl().getCreatedAt().toString()}</p>
+    <div class="container-lg mt-5 text-white">
+        <h1>Website: ${page.getUrl().getName()}</h1>
+        <table class="table table-bordered table-hover mt-3">
+            <tbody>
+                <tr>
+                    <td>ID</td>
+                    <td>${page.getUrl().getId()}</td>
+                </tr>
+                <tr>
+                    <td>URL</td>
+                    <td>${page.getUrl().getName()}</td>
+                </tr>
+                <tr>
+                    <td>Date of adding</td>
+                    <td>${page.getUrl().getCreatedAt()}</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h2 class="mt-5">Checks</h2>
         <form action="${Routes.checkUrlPath(page.getUrl().getId())}" method="post">
             <button type="submit" class="btn btn-primary">Check</button>
         </form>
 
         @if(page.getUrlChecks().isEmpty())
-            <p>Checks hasn't performed yet</p>
+            <h5>Checks hasn't performed yet</h5>
         @else
-            <table>
+            <table class="table table-bordered table-hover mt-3">
                 <thead>
                 <tr>
-                    <td>ID</td>
-                    <td>Status code</td>
-                    <td>Title</td>
-                    <td>h1</td>
-                    <td>Description</td>
-                    <td>Timestamp</td>
+                    <th class="col-1">ID</th>
+                    <th class="col-1">Status code</th>
+                    <th>Title</th>
+                    <th>h1</th>
+                    <th>Description</th>
+                    <th class="col-2">Checked at</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -40,5 +57,6 @@
                 </tbody>
             </table>
         @endif
+    </div>
     `
 )

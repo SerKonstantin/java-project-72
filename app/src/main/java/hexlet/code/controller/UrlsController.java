@@ -21,7 +21,8 @@ import java.util.Collections;
 public class UrlsController {
     public static void index(Context ctx) throws SQLException {
         var urls = UrlsRepository.getEntities();
-        var page = new UrlsPage(urls);
+        var latestChecks = UrlChecksRepository.getLatestChecks();
+        var page = new UrlsPage(urls, latestChecks);
         page.setFlash(ctx.consumeSessionAttribute("flash"));
         page.setFlashType(ctx.consumeSessionAttribute("flashType"));
         ctx.render("urls/index.jte", Collections.singletonMap("page", page));

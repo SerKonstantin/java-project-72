@@ -6,7 +6,9 @@ import hexlet.code.util.TimestampFormatter;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class UrlChecksRepository extends BaseRepository {
     public static List<UrlCheck> getEntities(Long urlId) throws SQLException {
@@ -52,6 +54,30 @@ public class UrlChecksRepository extends BaseRepository {
             } else {
                 throw new SQLException("DB have not returned an id or timestamp after saving an entity");
             }
+        }
+    }
+
+    public static Map<Long, UrlCheck> getLatestChecks() throws SQLException {
+        var sql = "SELECT DISTINCT ON (url_id) * from url_checks ORDER BY url_id, id DESC";
+        try (var conn = dataSource.getConnection(); var stmt = conn.prepareStatement(sql)) {
+            var results = stmt.executeQuery();
+            var latestChecks = new HashMap<Long, UrlCheck>();
+            while (results.next()) {
+                var id = results.getLong("id");
+                var statusCode = results.getInt("status_code");
+                var title = results.getString("title");
+                var h1 = results.getString("h1");
+                var description = results.getString("description");
+                var urlId = results.getLong("url_id");
+                var createdAt = results.getTimestamp("created_at");
+
+                var urlCheck = new UrlCheck(statusCode, title, h1, description, urlId);
+                urlCheck.setId(id);
+                urlCheck.setCreatedAt(TimestampFormatter.getString(createdAt));
+
+                latestChecks.put(urlId, urlCheck);
+            }
+            return latestChecks;
         }
     }
 }

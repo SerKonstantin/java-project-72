@@ -29,7 +29,7 @@ background-position: center center; background-size: cover;">
             <div class="collapse navbar-collapse" id="navbarNav">
                 <div class="navbar-nav">
                     <a href="${Routes.rootPath()}" class="nav-link">Homepage</a>
-                    <a href="${Routes.urlsPath()}" class="nav-link">Sites</a>
+                    <a href="${Routes.urlsPath()}" class="nav-link">Websites</a>
                 </div>
             </div>
         </div>
