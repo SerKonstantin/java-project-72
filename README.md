@@ -10,6 +10,7 @@ Created for educational purposes.
 
 Deployed on render.com: [https://site-analyzer-l13r.onrender.com](https://site-analyzer-l13r.onrender.com)
 
+Caution: free version of web service on render.com works really slowly, so response time might take up to sixty seconds!
 Potential expire date:  April 15, 2024
 
 ## Technologies used
