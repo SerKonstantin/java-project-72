@@ -21,14 +21,14 @@
 background-position: center center; background-size: cover;">
     <nav class="navbar navbar-expand-lg navbar-light" role="navigation">
         <div class="container-fluid">
-            <a href="${Routes.rootPath()}" class="navbar-brand">Simple page analyzer</a>
+            <a href="${Routes.rootPath()}" class="navbar-brand">Website analyzer</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
                     aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <div class="navbar-nav">
-                    <a href="${Routes.rootPath()}" class="nav-link">Homepage</a>
+                    <a href="${Routes.rootPath()}" class="nav-link">Home</a>
                     <a href="${Routes.urlsPath()}" class="nav-link">Websites</a>
                 </div>
             </div>

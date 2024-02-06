@@ -60,7 +60,7 @@ public class UrlsController {
 
                 if (UrlsRepository.findByName(url.getName()).isEmpty()) {
                     UrlsRepository.save(url);
-                    ctx.sessionAttribute("flash", "URL page added successfully");
+                    ctx.sessionAttribute("flash", "URL added successfully");
                     ctx.sessionAttribute("flashType", "success");
                     ctx.redirect(Routes.urlsPath());
 
