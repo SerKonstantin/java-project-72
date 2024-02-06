@@ -17,9 +17,9 @@
             crossorigin="anonymous"></script>
     <title>Website analyzer</title>
 </head>
-<body class="d-flex flex-column min-vh-100 bg-image" style="background-image: url('/background-mountains-dark.jpg');
+<body class="d-flex flex-column min-vh-100 bg-image" style="background-image: url('/background-clouds-light.jpg');
 background-position: center center; background-size: cover;">
-    <nav class="navbar navbar-expand-lg navbar-dark bg-transparent" role="navigation">
+    <nav class="navbar navbar-expand-lg navbar-light" role="navigation">
         <div class="container-fluid">
             <a href="${Routes.rootPath()}" class="navbar-brand">Simple page analyzer</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
@@ -37,8 +37,9 @@ background-position: center center; background-size: cover;">
 
     <main class="flex-grow-1">
         @if(page != null && page.getFlash() != null)
-            <div class="alert alert-${page.getFlashType()}" role="alert">
-                ${page.getFlash()}
+            <div class="rounded-0 m-0 alert alert-dismissible fade show alert-${page.getFlashType()}" role="alert">
+                <p class="m-0">${page.getFlash()}</p>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
         @endif
         <section class="content">
@@ -46,7 +47,7 @@ background-position: center center; background-size: cover;">
         </section>
     </main>
 
-    <footer class="footer py-4 mt-5 text-white" style="background-color: #050608">
+    <footer class="footer py-3 mt-5 bg-light">
         <div class="container-xl">
             <div class="text-center">
                 Created for educational purposes. Check my

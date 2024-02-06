@@ -5,7 +5,7 @@
 @template.layout.page(
     page = page,
     content = @`
-    <div class="container-lg mt-5 text-white">
+    <div class="container-lg mt-5">
         @if(page.getUrls().isEmpty())
             <h5>Please, <a href="${Routes.rootPath()}">add</a> websites to see them in the list</h5>
         @else

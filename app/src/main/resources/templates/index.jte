@@ -7,7 +7,7 @@
     content = @`
     <div class="container-fluid p-5">
         <div class="row">
-            <div class="col-md-10 col-lg-8 mx-auto text-white">
+            <div class="col-md-10 col-lg-8 mx-auto">
                 <h1 class="display-3 mb-0">Websites analyser</h1>
 
 
@@ -25,7 +25,6 @@
                         </div>
                     </div>
                 </form>
-                <p class="mt-2 mb-0 text-muted">Example: https://www.example.com</p>
             </div>
         </div>
     </div>

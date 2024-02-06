@@ -5,7 +5,7 @@
 @template.layout.page(
     page = page,
     content = @`
-    <div class="container-lg mt-5 text-white">
+    <div class="container-lg mt-5">
         <h1>Website: ${page.getUrl().getName()}</h1>
         <table class="table table-bordered table-hover mt-3">
             <tbody>
@@ -26,12 +26,10 @@
 
         <h2 class="mt-5">Checks</h2>
         <form action="${Routes.checkUrlPath(page.getUrl().getId())}" method="post">
-            <button type="submit" class="btn btn-primary">Check</button>
+            <button type="submit" class="btn btn-primary">Perform a check</button>
         </form>
 
-        @if(page.getUrlChecks().isEmpty())
-            <h5>Checks hasn't performed yet</h5>
-        @else
+        @if(!page.getUrlChecks().isEmpty())
             <table class="table table-bordered table-hover mt-3">
                 <thead>
                 <tr>
