@@ -19,7 +19,7 @@
                         <th class="col-1">Status code</th>
                     </tr>
                 </thead>
-                <tdata>
+                <tbody>
                 @for(var url : page.getUrls())
                     !{var urlCheck = page.getLatestChecks().get(url.getId());}
                     <tr>
@@ -29,7 +29,7 @@
                         <td>${urlCheck != null ? Integer.toString(urlCheck.getStatusCode()) : ""}</td>
                     </tr>
                 @endfor
-                </tdata>
+                </tbody>
             </table>
         @endif
     </div>

@@ -2,8 +2,6 @@ package hexlet.code;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-//import com.mashape.unirest.http.Unirest;
-//import com.mashape.unirest.http.exceptions.UnirestException;
 import hexlet.code.database.UrlChecksRepository;
 import hexlet.code.database.UrlsRepository;
 import hexlet.code.model.Url;
@@ -152,21 +150,4 @@ class AppTest {
             assertThat(urlCheck.getCreatedAt()).isNotNull();
         }));
     }
-
-//    @Test
-//    public void testInvalidUrlCheck() throws SQLException, UnirestException {
-//        var url = new Url("invalid_url.invalid_dom");
-//        UrlsRepository.save(url);
-//        var id = url.getId();
-//
-//        var response = Unirest.post("http://localhost:7070" + Routes.checkUrlPath(id)).asJson();
-//        var redirectUrl = response.getHeaders().get("location").get(0);
-//        if (redirectUrl != null) {
-//            URI redirectUri = URI.create(redirectUrl);
-//            response = Unirest.get(redirectUri.toString()).asJson();
-//        }
-//
-//        String responseBody = response.getBody().toString();
-//        assertThat(responseBody).contains("Не удалось выполнить проверку");
-//    }
 }

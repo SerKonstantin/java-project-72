@@ -60,12 +60,12 @@ public class UrlsController {
 
                 if (UrlsRepository.findByName(url.getName()).isEmpty()) {
                     UrlsRepository.save(url);
-                    ctx.sessionAttribute("flash", "Страница успешно добавлена"); // TODO check message
+                    ctx.sessionAttribute("flash", "URL page added successfully");
                     ctx.sessionAttribute("flashType", "success");
                     ctx.redirect(Routes.urlsPath());
 
                 } else {
-                    ctx.sessionAttribute("flash", "Страница уже существует"); // TODO check message
+                    ctx.sessionAttribute("flash", "URL page already exists");
                     ctx.sessionAttribute("flashType", "info");
                     ctx.redirect(Routes.urlsPath());
                 }
@@ -74,7 +74,7 @@ public class UrlsController {
                 throw new URISyntaxException(userInput, "Invalid URL");
             }
         } catch (AssertionError | URISyntaxException e) {
-            ctx.sessionAttribute("flash", "Некорректный URL"); // TODO check message
+            ctx.sessionAttribute("flash", "Invalid URL");
             ctx.sessionAttribute("flashType", "danger");
             ctx.redirect(Routes.rootPath());
         }
@@ -83,7 +83,7 @@ public class UrlsController {
     public static void show(Context ctx) throws SQLException {
         var id = ctx.pathParamAsClass("id", Long.class).getOrDefault(null);
         var url = UrlsRepository.findById(id)
-                .orElseThrow(() -> new NotFoundResponse("Page not found")); // TODO mb create not found page?
+                .orElseThrow(() -> new NotFoundResponse("Page not found"));
         var urlChecks = UrlChecksRepository.getEntities(url.getId());
         var page = new UrlPage(url, urlChecks);
         page.setFlash(ctx.consumeSessionAttribute("flash"));
@@ -94,7 +94,7 @@ public class UrlsController {
     public static void check(Context ctx) throws SQLException {
         var urlId = ctx.pathParamAsClass("id", Long.class).getOrDefault(null);
         var url = UrlsRepository.findById(urlId)
-                .orElseThrow(() -> new NotFoundResponse("Page not found")); // TODO mb create not found page?
+                .orElseThrow(() -> new NotFoundResponse("Page not found"));
         try {
             var response = Unirest.get(url.getName()).asString();
             var code = response.getStatus();
@@ -106,11 +106,11 @@ public class UrlsController {
 
             var urlCheck = new UrlCheck(code, title, h1, description, urlId);
             UrlChecksRepository.save(urlCheck);
-            ctx.sessionAttribute("flash", "Проверка успешно выполнена"); // TODO check message
+            ctx.sessionAttribute("flash", "Check performed successfully");
             ctx.sessionAttribute("flashType", "success");
 
         } catch (UnirestException | NullPointerException e) {
-            ctx.sessionAttribute("flash", "Не удалось выполнить проверку"); // TODO check message
+            ctx.sessionAttribute("flash", "Failed to perform a check");
             ctx.sessionAttribute("flashType", "danger");
         }
 
