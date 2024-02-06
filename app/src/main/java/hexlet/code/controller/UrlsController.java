@@ -95,14 +95,23 @@ public class UrlsController {
         var urlId = ctx.pathParamAsClass("id", Long.class).getOrDefault(null);
         var url = UrlsRepository.findById(urlId)
                 .orElseThrow(() -> new NotFoundResponse("Page not found"));
+
         try {
             var response = Unirest.get(url.getName()).asString();
             var code = response.getStatus();
 
             var doc = Jsoup.parse(response.getBody());
-            var title = doc.title();
-            var h1 = doc.selectFirst("h1").text();
-            var description = doc.selectFirst("meta[name=description]").attr("content");
+            var title = doc != null ? doc.title() : "";
+
+            var h1 = "";
+            if (doc != null && doc.selectFirst("h1") != null) {
+                h1 = doc.selectFirst("h1").text();
+            }
+
+            var description = "";
+            if (doc != null && doc.selectFirst("meta[name=description]") != null) {
+                description = doc.selectFirst("meta[name=description]").attr("content");
+            }
 
             var urlCheck = new UrlCheck(code, title, h1, description, urlId);
             UrlChecksRepository.save(urlCheck);

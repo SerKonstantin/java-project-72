@@ -150,4 +150,34 @@ class AppTest {
             assertThat(urlCheck.getCreatedAt()).isNotNull();
         }));
     }
+
+    @Test
+    public void testUrlWithNoAttrCheck() {
+        var mockServerUrl = mockServer.url("/").toString();
+
+        var mockResponse = new MockResponse();
+        var mockContent = "<p>some paragraph</p>";
+        mockResponse.setBody(mockContent);
+        mockServer.enqueue(mockResponse);
+
+        JavalinTest.test(app, ((server, client) -> {
+            var url = new Url(mockServerUrl);
+            UrlsRepository.save(url);
+            var id = url.getId();
+
+            var response = client.post(Routes.checkUrlPath(id));
+            assertThat(response.code()).isEqualTo(200);
+            var responseBody = response.body().string();
+            assertThat(responseBody.contains("200"));
+
+            var urlCheck = UrlChecksRepository.getEntities(1L).get(0);
+            assertThat(urlCheck.getId() == 1L);
+            assertThat(urlCheck.getUrlId().equals(id));
+            assertThat(urlCheck.getCreatedAt()).isNotNull();
+
+            assertThat(urlCheck.getTitle()).isEqualTo("");
+            assertThat(urlCheck.getH1()).isEqualTo("");
+            assertThat(urlCheck.getDescription()).isEqualTo("");
+        }));
+    }
 }
