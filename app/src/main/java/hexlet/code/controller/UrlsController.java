@@ -36,48 +36,50 @@ public class UrlsController {
 
         try {
             assert userInput != null;
-            if (!userInput.startsWith("http://") && !userInput.startsWith("https://")) {
-                userInput = "https://" + userInput;
-            }
+            var url = normalizeUrl(userInput);
 
-            URI uri = new URI(userInput);
-            var scheme = uri.getScheme();
-            var host = uri.getHost();
-            var port = uri.getPort();
-
-            if (host != null && host.contains(".")) {
-                if (host.startsWith("www.")) {
-                    host = host.substring(4);
-                }
-
-                StringBuilder sb = new StringBuilder();
-                sb.append(scheme).append("://").append(host);
-                if (port != -1) {
-                    sb.append(":").append(port);
-                }
-
-                var url = new Url(sb.toString());
-
-                if (UrlsRepository.findByName(url.getName()).isEmpty()) {
-                    UrlsRepository.save(url);
-                    ctx.sessionAttribute("flash", "URL added successfully");
-                    ctx.sessionAttribute("flashType", "success");
-                    ctx.redirect(Routes.urlsPath());
-
-                } else {
-                    ctx.sessionAttribute("flash", "URL page already exists");
-                    ctx.sessionAttribute("flashType", "info");
-                    ctx.redirect(Routes.urlsPath());
-                }
-
+            if (UrlsRepository.findByName(url.getName()).isEmpty()) {
+                UrlsRepository.save(url);
+                ctx.sessionAttribute("flash", "URL added successfully");
+                ctx.sessionAttribute("flashType", "success");
             } else {
-                throw new URISyntaxException(userInput, "Invalid URL");
+                ctx.sessionAttribute("flash", "URL page already exists");
+                ctx.sessionAttribute("flashType", "info");
             }
+            ctx.redirect(Routes.urlsPath());
+
         } catch (AssertionError | URISyntaxException e) {
             ctx.sessionAttribute("flash", "Invalid URL");
             ctx.sessionAttribute("flashType", "danger");
             ctx.redirect(Routes.rootPath());
         }
+    }
+
+    private static Url normalizeUrl(String userInput) throws URISyntaxException {
+        if (!userInput.startsWith("http://") && !userInput.startsWith("https://")) {
+            userInput = "https://" + userInput;
+        }
+
+        URI uri = new URI(userInput);
+        var scheme = uri.getScheme();
+        var host = uri.getHost();
+        var port = uri.getPort();
+
+        if (host == null || !host.contains(".")) {
+            throw new URISyntaxException(userInput, "Invalid URL");
+        }
+
+        if (host.startsWith("www.")) {
+            host = host.substring(4);
+        }
+
+        var urlBuilder = new StringBuilder();
+        urlBuilder.append(scheme).append("://").append(host);
+        if (port != -1) {
+            urlBuilder.append(":").append(port);
+        }
+
+        return new Url(urlBuilder.toString());
     }
 
     public static void show(Context ctx) throws SQLException {
