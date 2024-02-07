@@ -33,7 +33,7 @@ public class App {
 
     public static String getJdbcUrl() {
         return System.getenv().getOrDefault("JDBC_DATABASE_URL",
-                "jdbc:h2:mem:project;MODE=PostgreSQL;DB_CLOSE_DELAY=-1;");
+                "jdbc:h2:mem:project;MODE=PostgreSQL;");
     }
 
     private static String readResourceFile(String filename) throws IOException {
