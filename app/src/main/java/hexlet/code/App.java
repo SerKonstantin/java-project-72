@@ -46,6 +46,8 @@ public class App {
     public static Javalin getApp() throws SQLException, IOException {
         var hikariConfig = new HikariConfig();
         hikariConfig.setJdbcUrl(getJdbcUrl());
+        hikariConfig.setMinimumIdle(1);
+        hikariConfig.setMaximumPoolSize(1);
 
         var dataSource = new HikariDataSource(hikariConfig);
         var resourceFileName = "schema.sql";
