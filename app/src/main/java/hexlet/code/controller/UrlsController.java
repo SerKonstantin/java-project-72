@@ -69,7 +69,7 @@ public class UrlsController {
         var host = uri.getHost();
         var port = uri.getPort();
 
-        if (host == null || !host.contains(".")) {
+        if (host == null || (!host.contains(".") && !host.equals("localhost"))) {
             throw new URISyntaxException(userInput, "Invalid URL");
         }
 
