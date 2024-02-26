@@ -1,5 +1,6 @@
 @import hexlet.code.dto.urls.UrlPage
 @import hexlet.code.util.Routes
+@import hexlet.code.util.TimestampFormatter
 @param UrlPage page
 
 @template.layout.page(
@@ -19,7 +20,7 @@
                 </tr>
                 <tr>
                     <td>Date of adding</td>
-                    <td>${page.getUrl().getCreatedAt()}</td>
+                    <td>${TimestampFormatter.getString(page.getUrl().getCreatedAt())}</td>
                 </tr>
             </tbody>
         </table>
@@ -49,7 +50,7 @@
                         <td>${urlCheck.getTitle()}</td>
                         <td>${urlCheck.getH1()}</td>
                         <td>${urlCheck.getDescription()}</td>
-                        <td>${urlCheck.getCreatedAt()}</td>
+                        <td>${TimestampFormatter.getString(page.getUrl().getCreatedAt())}</td>
                     </tr>
                 @endfor
                 </tbody>

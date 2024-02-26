@@ -1,5 +1,6 @@
 @import hexlet.code.dto.urls.UrlsPage
 @import hexlet.code.util.Routes
+@import hexlet.code.util.TimestampFormatter
 @param UrlsPage page
 
 @template.layout.page(
@@ -25,7 +26,7 @@
                     <tr>
                         <td>${url.getId()}</td>
                         <td><a href="${Routes.urlPath(url.getId())}">${url.getName()}</a></td>
-                        <td>${urlCheck != null ? urlCheck.getCreatedAt() : ""}</td>
+                        <td>${urlCheck != null ? TimestampFormatter.getString(urlCheck.getCreatedAt()) : ""}</td>
                         <td>${urlCheck != null ? Integer.toString(urlCheck.getStatusCode()) : ""}</td>
                     </tr>
                 @endfor

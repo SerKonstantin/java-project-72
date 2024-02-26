@@ -1,6 +1,5 @@
 package hexlet.code.database;
 
-import hexlet.code.util.TimestampFormatter;
 import hexlet.code.model.Url;
 
 import java.sql.SQLException;
@@ -19,9 +18,8 @@ public class UrlsRepository extends BaseRepository {
                 var id = results.getLong("id");
                 var name = results.getString("name");
                 var createdAt = results.getTimestamp("created_at");
-                var url = new Url(name);
+                var url = new Url(name, createdAt);
                 url.setId(id);
-                url.setCreatedAt(TimestampFormatter.getString(createdAt));
                 urls.add(url);
             }
             return urls;
@@ -29,18 +27,17 @@ public class UrlsRepository extends BaseRepository {
     }
 
     public static void save(Url url) throws SQLException {
-        var sql = "INSERT INTO urls (name) VALUES (?)";
+        var sql = "INSERT INTO urls (name, created_at) VALUES (?, ?)";
         try (var conn = dataSource.getConnection();
              var stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             stmt.setString(1, url.getName());
+            stmt.setTimestamp(2, url.getCreatedAt());
             stmt.executeUpdate();
             var generatedKeys = stmt.getGeneratedKeys();
             if (generatedKeys.next()) {
-                url.setId(generatedKeys.getLong("id"));
-                var sqlTimestamp = generatedKeys.getTimestamp("created_at");
-                url.setCreatedAt(TimestampFormatter.getString(sqlTimestamp));
+                url.setId(generatedKeys.getLong(1));
             } else {
-                throw new SQLException("DB have not returned an id or timestamp after saving an entity");
+                throw new SQLException("DB have not returned an id after saving an entity");
             }
         }
     }
@@ -53,9 +50,8 @@ public class UrlsRepository extends BaseRepository {
             if (results.next()) {
                 var name = results.getString("name");
                 var createdAt = results.getTimestamp("created_at");
-                var url = new Url(name);
+                var url = new Url(name, createdAt);
                 url.setId(id);
-                url.setCreatedAt(TimestampFormatter.getString(createdAt));
                 return Optional.of(url);
             } else {
                 return Optional.empty();
@@ -71,9 +67,8 @@ public class UrlsRepository extends BaseRepository {
             if (results.next()) {
                 var id = results.getLong("id");
                 var createdAt = results.getTimestamp("created_at");
-                var url = new Url(name);
+                var url = new Url(name, createdAt);
                 url.setId(id);
-                url.setCreatedAt(TimestampFormatter.getString(createdAt));
                 return Optional.of(url);
             } else {
                 return Optional.empty();

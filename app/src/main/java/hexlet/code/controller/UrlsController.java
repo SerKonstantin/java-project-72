@@ -16,7 +16,9 @@ import org.jsoup.Jsoup;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.Collections;
+import java.util.Date;
 
 public class UrlsController {
     public static void index(Context ctx) throws SQLException {
@@ -36,9 +38,11 @@ public class UrlsController {
 
         try {
             assert userInput != null;
-            var url = normalizeUrl(userInput);
+            String urlName = normalizeUrl(userInput);
 
-            if (UrlsRepository.findByName(url.getName()).isEmpty()) {
+            if (UrlsRepository.findByName(urlName).isEmpty()) {
+                var createdAt = new Timestamp(new Date().getTime());
+                var url = new Url(urlName, createdAt);
                 UrlsRepository.save(url);
                 ctx.sessionAttribute("flash", "URL added successfully");
                 ctx.sessionAttribute("flashType", "success");
@@ -55,7 +59,7 @@ public class UrlsController {
         }
     }
 
-    private static Url normalizeUrl(String userInput) throws URISyntaxException {
+    private static String normalizeUrl(String userInput) throws URISyntaxException {
         if (!userInput.startsWith("http://") && !userInput.startsWith("https://")) {
             userInput = "https://" + userInput;
         }
@@ -79,7 +83,7 @@ public class UrlsController {
             urlBuilder.append(":").append(port);
         }
 
-        return new Url(urlBuilder.toString());
+        return urlBuilder.toString();
     }
 
     public static void show(Context ctx) throws SQLException {
@@ -115,7 +119,8 @@ public class UrlsController {
                 description = doc.selectFirst("meta[name=description]").attr("content");
             }
 
-            var urlCheck = new UrlCheck(code, title, h1, description, urlId);
+            var createdAt = new Timestamp(new Date().getTime());
+            var urlCheck = new UrlCheck(code, title, h1, description, urlId, createdAt);
             UrlChecksRepository.save(urlCheck);
             ctx.sessionAttribute("flash", "Check performed successfully");
             ctx.sessionAttribute("flashType", "success");
