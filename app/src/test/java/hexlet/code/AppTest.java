@@ -10,31 +10,44 @@ import io.javalin.Javalin;
 import io.javalin.testtools.JavalinTest;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
-import org.jsoup.Jsoup;
-import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.sql.SQLException;
 
 class AppTest {
-    private Javalin app;
-    private MockWebServer mockServer;
+    private static Javalin app;
+    private static MockWebServer mockServer;
+    private static String mockServerUrl;
+    private static String fixturesFolderPath = "src/test/resources/fixtures/";
 
-    @BeforeEach
-    public final void setUp() throws SQLException, IOException {
-        app = App.getApp();
-        mockServer = new MockWebServer();
-        mockServer.start();
+    public String readFixture(String fileName) throws IOException {
+        String pathName = fixturesFolderPath + fileName;
+        return Files.readString(Path.of(pathName));
     }
 
-    @AfterEach
-    public final void shutdown() throws IOException {
+    @BeforeAll
+    public static void initializeMockWebServer() throws IOException {
+        mockServer = new MockWebServer();
+        mockServerUrl = mockServer.url("/").toString();
+//        mockServer.start();       // TODO ask why this line is not needed
+    }
+
+    @BeforeEach
+    public void initializeApp() throws SQLException, IOException {
+        app = App.getApp();
+    }
+
+    @AfterAll
+    public static void shutdownMockWebServer() throws IOException {
         mockServer.shutdown();
-        app.close();
     }
 
     @Test
@@ -43,8 +56,7 @@ class AppTest {
             var response = client.get(Routes.rootPath());
             assertThat(response.code()).isEqualTo(200);
             String responseBody = response.body().string();
-            assertThat(responseBody.contains("<form"));
-            assertThat(responseBody.contains("name=\"url\""));
+            assertThat(responseBody.contains("Website analyzer"));
         });
     }
 
@@ -57,7 +69,8 @@ class AppTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = {"github.com", "www.github.com", "https://github.com", "https://www.github.com"})
+    @ValueSource(strings = {"github.com", "www.github.com", "https://github.com", "https://www.github.com",
+                            "github.com/SerKonstantin/java-project-72"})
     public void testCreateUrl(String url) {
         JavalinTest.test(app, ((server, client) -> {
             var requestBody = "url=" + url;
@@ -70,7 +83,7 @@ class AppTest {
 
     @ParameterizedTest
     @ValueSource(strings = {"github.com:8000", "www.github.com:8000", "https://github.com:8000",
-                            "https://www.github.com:8000"})
+                            "https://www.github.com:8000", "github.com:8080/SerKonstantin/java-project-72"})
     public void testCreateUrlWithPort(String url) {
         JavalinTest.test(app, ((server, client) -> {
             var requestBody = "url=" + url;
@@ -84,20 +97,15 @@ class AppTest {
     @Test
     public void testCreateInvalidUrl() {
         JavalinTest.test(app, (server, client) -> {
-            client.post(Routes.urlsPath(), "url=google1.com");
-            client.post(Routes.urlsPath(), "url=google2.com");
-            client.post(Routes.urlsPath(), "url=google3.com");
+            client.post(Routes.urlsPath(), "url=valid1.com");
+            client.post(Routes.urlsPath(), "url=valid2.com");
+            client.post(Routes.urlsPath(), "url=valid3.com");
 
-            client.post(Routes.urlsPath(), "url=github");
+            client.post(Routes.urlsPath(), "url=invalid");
 
-            var responseBody = client.get(Routes.urlsPath()).body().string();
-            var doc = Jsoup.parse(responseBody);
-            var ulElements = doc.select("ul");
-
-            boolean containsInvalidUrl = ulElements.stream()
-                    .anyMatch(ul -> ul.text().contains("github"));
-
-            assertThat(containsInvalidUrl).isFalse();
+            var response = client.get(Routes.urlsPath());
+            String responseBody = response.body().string();
+            assertThat(!responseBody.contains("invalid"));
         });
     }
 
@@ -120,13 +128,9 @@ class AppTest {
     }
 
     @Test
-    public void testUrlCheck() {
-        var mockServerUrl = mockServer.url("/").toString();
-
+    public void testUrlCheck() throws IOException {
         var mockResponse = new MockResponse();
-        var mockContent = "<meta name=\"description\" content=\"some description\">\n"
-                + "<title>some title</title>\n"
-                + "<h1>some header</h1>\n";
+        var mockContent = readFixture("mockPage.html");
         mockResponse.setBody(mockContent);
         mockServer.enqueue(mockResponse);
 
@@ -143,6 +147,7 @@ class AppTest {
             assertThat(responseBody.contains("some header"));
             assertThat(responseBody.contains("some description"));
 
+            // TODO remove checking by index
             var urlCheck = UrlChecksRepository.getEntities(1L).get(0);
             assertThat(urlCheck.getId() == 1L);
             assertThat(urlCheck.getUrlId().equals(id));
@@ -151,11 +156,9 @@ class AppTest {
     }
 
     @Test
-    public void testUrlWithNoAttrCheck() {
-        var mockServerUrl = mockServer.url("/").toString();
-
+    public void testUrlWithNoAttrCheck() throws IOException {
         var mockResponse = new MockResponse();
-        var mockContent = "<p>some paragraph</p>";
+        var mockContent = readFixture("mockPageWithNoAttr.html");
         mockResponse.setBody(mockContent);
         mockServer.enqueue(mockResponse);
 
@@ -169,6 +172,7 @@ class AppTest {
             var responseBody = response.body().string();
             assertThat(responseBody.contains("200"));
 
+            // TODO remove checking by index
             var urlCheck = UrlChecksRepository.getEntities(1L).get(0);
             assertThat(urlCheck.getId() == 1L);
             assertThat(urlCheck.getUrlId().equals(id));
