@@ -4,7 +4,9 @@ import hexlet.code.model.UrlCheck;
 
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -24,8 +26,9 @@ public class UrlChecksRepository extends BaseRepository {
                 var description = results.getString("description");
                 var createdAt = results.getTimestamp("created_at");
 
-                var urlCheck = new UrlCheck(statusCode, title, h1, description, urlId, createdAt);
+                var urlCheck = new UrlCheck(statusCode, title, h1, description, urlId);
                 urlCheck.setId(id);
+                urlCheck.setCreatedAt(createdAt);
                 urlChecks.add(urlCheck);
             }
             return urlChecks;
@@ -42,12 +45,16 @@ public class UrlChecksRepository extends BaseRepository {
             stmt.setString(3, urlCheck.getH1());
             stmt.setString(4, urlCheck.getDescription());
             stmt.setLong(5, urlCheck.getUrlId());
-            stmt.setTimestamp(6, urlCheck.getCreatedAt());
+
+            var createdAt = new Timestamp(new Date().getTime());
+            stmt.setTimestamp(6, createdAt);
+
             stmt.executeUpdate();
 
             var generatedKeys = stmt.getGeneratedKeys();
             if (generatedKeys.next()) {
                 urlCheck.setId(generatedKeys.getLong(1));
+                urlCheck.setCreatedAt(createdAt);
             } else {
                 throw new SQLException("DB have not returned an id or timestamp after saving an entity");
             }
@@ -68,8 +75,9 @@ public class UrlChecksRepository extends BaseRepository {
                 var urlId = results.getLong("url_id");
                 var createdAt = results.getTimestamp("created_at");
 
-                var urlCheck = new UrlCheck(statusCode, title, h1, description, urlId, createdAt);
+                var urlCheck = new UrlCheck(statusCode, title, h1, description, urlId);
                 urlCheck.setId(id);
+                urlCheck.setCreatedAt(createdAt);
                 latestChecks.put(urlId, urlCheck);
             }
             return latestChecks;

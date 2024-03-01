@@ -16,9 +16,7 @@ import org.jsoup.Jsoup;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.sql.SQLException;
-import java.sql.Timestamp;
 import java.util.Collections;
-import java.util.Date;
 
 public class UrlsController {
     public static void index(Context ctx) throws SQLException {
@@ -41,8 +39,7 @@ public class UrlsController {
             String urlName = normalizeUrl(userInput);
 
             if (UrlsRepository.findByName(urlName).isEmpty()) {
-                var createdAt = new Timestamp(new Date().getTime());
-                var url = new Url(urlName, createdAt);
+                var url = new Url(urlName);
                 UrlsRepository.save(url);
                 ctx.sessionAttribute("flash", "URL added successfully");
                 ctx.sessionAttribute("flashType", "success");
@@ -119,8 +116,7 @@ public class UrlsController {
                 description = doc.selectFirst("meta[name=description]").attr("content");
             }
 
-            var createdAt = new Timestamp(new Date().getTime());
-            var urlCheck = new UrlCheck(code, title, h1, description, urlId, createdAt);
+            var urlCheck = new UrlCheck(code, title, h1, description, urlId);
             UrlChecksRepository.save(urlCheck);
             ctx.sessionAttribute("flash", "Check performed successfully");
             ctx.sessionAttribute("flashType", "success");

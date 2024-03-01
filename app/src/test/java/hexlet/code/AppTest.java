@@ -19,8 +19,6 @@ import org.junit.jupiter.params.provider.ValueSource;
 
 import java.io.IOException;
 import java.sql.SQLException;
-import java.sql.Timestamp;
-import java.util.Date;
 
 class AppTest {
     private Javalin app;
@@ -105,8 +103,7 @@ class AppTest {
 
     @Test
     public void testUrlPage() throws SQLException {
-        var createdAt = new Timestamp(new Date().getTime());
-        var url = new Url("https://github.com", createdAt);
+        var url = new Url("https://github.com");
         UrlsRepository.save(url);
         JavalinTest.test(app, ((server, client) -> {
             var response = client.get(Routes.urlPath(url.getId()));
@@ -134,8 +131,7 @@ class AppTest {
         mockServer.enqueue(mockResponse);
 
         JavalinTest.test(app, ((server, client) -> {
-            var createdAt = new Timestamp(new Date().getTime());
-            var url = new Url(mockServerUrl, createdAt);
+            var url = new Url(mockServerUrl);
             UrlsRepository.save(url);
             var id = url.getId();
 
@@ -164,8 +160,7 @@ class AppTest {
         mockServer.enqueue(mockResponse);
 
         JavalinTest.test(app, ((server, client) -> {
-            var createdAt = new Timestamp(new Date().getTime());
-            var url = new Url(mockServerUrl, createdAt);
+            var url = new Url(mockServerUrl);
             UrlsRepository.save(url);
             var id = url.getId();
 
