@@ -2,7 +2,6 @@ package hexlet.code;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import hexlet.code.database.UrlChecksRepository;
 import hexlet.code.database.UrlsRepository;
 import hexlet.code.model.Url;
 import hexlet.code.util.Routes;
