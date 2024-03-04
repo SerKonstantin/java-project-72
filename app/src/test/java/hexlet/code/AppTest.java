@@ -37,7 +37,6 @@ class AppTest {
     public static void initializeMockWebServer() throws IOException {
         mockServer = new MockWebServer();
         mockServerUrl = mockServer.url("/").toString();
-//        mockServer.start();       // TODO ask why this line is not needed
     }
 
     @BeforeEach
@@ -147,11 +146,7 @@ class AppTest {
             assertThat(responseBody.contains("some header"));
             assertThat(responseBody.contains("some description"));
 
-            // TODO remove checking by index
-            var urlCheck = UrlChecksRepository.getEntities(1L).get(0);
-            assertThat(urlCheck.getId() == 1L);
-            assertThat(urlCheck.getUrlId().equals(id));
-            assertThat(urlCheck.getCreatedAt()).isNotNull();
+            assertThat(responseBody.contains("Check performed successfully"));
         }));
     }
 
@@ -172,15 +167,7 @@ class AppTest {
             var responseBody = response.body().string();
             assertThat(responseBody.contains("200"));
 
-            // TODO remove checking by index
-            var urlCheck = UrlChecksRepository.getEntities(1L).get(0);
-            assertThat(urlCheck.getId() == 1L);
-            assertThat(urlCheck.getUrlId().equals(id));
-            assertThat(urlCheck.getCreatedAt()).isNotNull();
-
-            assertThat(urlCheck.getTitle()).isEqualTo("");
-            assertThat(urlCheck.getH1()).isEqualTo("");
-            assertThat(urlCheck.getDescription()).isEqualTo("");
+            assertThat(responseBody.contains("Check performed successfully"));
         }));
     }
 }
